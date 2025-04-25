@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess the Number</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .game-card {
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 2rem;
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h1 {
+      font-weight: bold;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    #message {
+      transition: all 0.3s ease-in-out;
+    }
+
+    input[type=number] {
+      transition: 0.3s ease-in-out;
+      border-radius: 10px;
+    }
+
+    input[type=number]:focus {
+      border-color: #7b42f6;
+      box-shadow: 0 0 10px rgba(123, 66, 246, 0.2);
+    }
+
+    .btn-primary {
+      background-color: #7b42f6;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #6933d3;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+
+    .guess-history {
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="game-card text-center">
+    <h1>🎯 Guess The Number</h1>
+    <p class="mb-3">I'm thinking of a number between <strong>1</strong> and <strong>100</strong>. Can you guess it?</p>
+
+    <div class="mb-3">
+      <input type="number" id="userGuess" class="form-control" placeholder="Enter your guess" min="1" max="100" />
+    </div>
+
+    <button onclick="checkGuess()" class="btn btn-primary w-100 mb-3">Guess</button>
+
+    <div id="message" class="mb-3 fw-semibold"></div>
+
+    <div class="guess-history mb-2">
+      <strong>Your guesses:</strong>
+      <span id="history"></span>
+    </div>
+    <div id="attemptsLeft" class="text-muted mb-2"></div>
+
+    <button onclick="resetGame()" class="btn btn-secondary w-100 mt-2 d-none" id="resetBtn">🔁 Play Again</button>
+  </div>
+
+  <script>
+    let randomNumber = Math.floor(Math.random() * 100) + 1;
+    let guesses = [];
+    let attempts = 10;
+
+    function checkGuess() {
+      const guessInput = document.getElementById("userGuess");
+      const guess = parseInt(guessInput.value);
+      const message = document.getElementById("message");
+      const history = document.getElementById("history");
+      const attemptsLeft = document.getElementById("attemptsLeft");
+      const resetBtn = document.getElementById("resetBtn");
+
+      if (isNaN(guess) || guess < 1 || guess > 100) {
+        message.textContent = "⚠️ Please enter a number between 1 and 100.";
+        message.style.color = "#d9534f";
+        return;
+      }
+
+      guesses.push(guess);
+      history.textContent = guesses.join(", ");
+
+      if (guess === randomNumber) {
+        message.innerHTML = `🎉 Correct! The number was <strong>${randomNumber}</strong>.`;
+        message.style.color = "#28a745";
+        resetBtn.classList.remove("d-none");
+        document.querySelector("button.btn-primary").disabled = true;
+      } else {
+        attempts--;
+        message.textContent = guess < randomNumber ? "🔽 Too low!" : "🔼 Too high!";
+        message.style.color = "#ffc107";
+        attemptsLeft.textContent = `${attempts} attempt${attempts === 1 ? "" : "s"} left`;
+
+        if (attempts === 0) {
+          message.innerHTML = `💥 Game over! The number was <strong>${randomNumber}</strong>.`;
+          message.style.color = "#dc3545";
+          resetBtn.classList.remove("d-none");
+          document.querySelector("button.btn-primary").disabled = true;
+        }
+      }
+
+      guessInput.value = "";
+      guessInput.focus();
+    }
+
+    function resetGame() {
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+      guesses = [];
+      attempts = 10;
+      document.getElementById("message").textContent = "";
+      document.getElementById("message").style.color = "";
+      document.getElementById("history").textContent = "";
+      document.getElementById("attemptsLeft").textContent = "";
+      document.getElementById("userGuess").value = "";
+      document.querySelector("button.btn-primary").disabled = false;
+      document.getElementById("resetBtn").classList.add("d-none");
+    }
+  </script>
+</body>
+</html>
